@@ -1,65 +1,82 @@
-import Image from "next/image";
+// src/app/page.tsx
 
-export default function Home() {
+// 1. Định nghĩa cấu trúc dữ liệu giống y hệt Entity bên Spring Boot
+interface Guitar {
+  id: number;
+  name: string;
+  brand: string;
+  price: number;
+  quantity: number;
+}
+
+// 2. Hàm gọi API từ Backend (Chạy trên Server để tối ưu SEO)
+async function fetchGuitars() {
+  // Gọi API lấy trang đầu tiên, 10 sản phẩm. 'no-store' giúp data luôn mới nhất.
+  const res = await fetch('http://localhost:8080/api/guitars?page=0&size=10', {
+    cache: 'no-store',
+  });
+
+  if (!res.ok) {
+    throw new Error('Lấy dữ liệu thất bại');
+  }
+
+  return res.json();
+}
+
+// Hàm format tiền tệ VNĐ cho đẹp mắt
+const formatVND = (price: number) => {
+  return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(price);
+};
+
+// 3. Component Giao diện chính
+export default async function Home() {
+  // Lấy dữ liệu từ Backend
+  const data = await fetchGuitars();
+  // Vì backend trả về đối tượng Page, danh sách đàn nằm trong mảng 'content'
+  const guitars: Guitar[] = data.content;
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+      <main className="min-h-screen bg-gray-50 p-8">
+        <div className="max-w-6xl mx-auto">
+          {/* Tiêu đề Shop */}
+          <header className="mb-12 text-center">
+            <h1 className="text-4xl font-extrabold text-gray-900 mb-4">🎸 Anh Dũng Guitar Shop</h1>
+            <p className="text-gray-600 text-lg">Khám phá những giai điệu tuyệt vời nhất</p>
+          </header>
+
+          {/* Lưới sản phẩm (Grid) */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 md:gap-8 gap-6">
+            {guitars.length === 0 ? (
+                <p className="text-center col-span-3 text-gray-500">Chưa có cây đàn nào trong kho.</p>
+            ) : (
+                guitars.map((guitar) => (
+                    <div key={guitar.id} className="bg-white rounded-2xl shadow-sm hover:shadow-xl transition-shadow duration-300 overflow-hidden border border-gray-100">
+                      {/* Khung ảnh giả lập */}
+                      <div className="h-64 bg-gray-200 flex items-center justify-center relative">
+                        <span className="text-6xl">🎸</span>
+                        <span className="absolute top-4 right-4 bg-black text-white text-xs font-bold px-3 py-1 rounded-full">
+                    {guitar.brand}
+                  </span>
+                      </div>
+
+                      {/* Thông tin sản phẩm */}
+                      <div className="p-6">
+                        <h2 className="text-2xl font-bold text-gray-800 mb-2 truncate">{guitar.name}</h2>
+                        <div className="flex justify-between items-center mb-4">
+                          <p className="text-2xl font-extrabold text-orange-600">{formatVND(guitar.price)}</p>
+                          <p className="text-sm text-gray-500">Kho: {guitar.quantity}</p>
+                        </div>
+
+                        {/* Nút bấm */}
+                        <button className="w-full bg-gray-900 hover:bg-gray-800 text-white font-semibold py-3 px-4 rounded-xl transition-colors duration-200 flex justify-center items-center gap-2">
+                          🛒 Thêm vào giỏ hàng
+                        </button>
+                      </div>
+                    </div>
+                ))
+            )}
+          </div>
         </div>
       </main>
-    </div>
   );
 }
