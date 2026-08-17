@@ -85,7 +85,7 @@ export default function EditProductPage() {
     setError('');
 
     try {
-      await adminService.updateGuitar(id, formData);
+      await adminService.updateGuitar(id, formData as any);
       router.push('/admin/products');
     } catch (err: any) {
       setError(err.message || 'Có lỗi xảy ra khi cập nhật sản phẩm');

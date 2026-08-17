@@ -30,6 +30,7 @@ export interface Guitar {
   category?: Category;
   brand?: Brand;
   images?: ProductImage[];
+  status?: string;
 }
 
 export interface User {

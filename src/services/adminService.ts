@@ -68,5 +68,21 @@ export const adminService = {
     const res = await fetch('http://localhost:8080/api/brands');
     if (!res.ok) throw new Error('Failed to fetch brands');
     return res.json();
+  },
+
+  async uploadImage(file: File): Promise<string> {
+    const formData = new FormData();
+    formData.append('file', file);
+    const token = authService.getToken();
+    const res = await fetch('http://localhost:8080/api/uploads', {
+      method: 'POST',
+      headers: {
+        ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
+      },
+      body: formData,
+    });
+    if (!res.ok) throw new Error('Tải lên ảnh thất bại');
+    const data = await res.json();
+    return data.url;
   }
 };

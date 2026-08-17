@@ -66,7 +66,7 @@ export default function AddProductPage() {
     setError('');
 
     try {
-      await adminService.addGuitar(formData);
+      await adminService.addGuitar(formData as any);
       router.push('/admin/products');
     } catch (err: any) {
       setError(err.message || 'Có lỗi xảy ra khi thêm sản phẩm');

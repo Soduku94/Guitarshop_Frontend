@@ -41,12 +41,20 @@ export default function AdminProductsPage() {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <h2 className="text-2xl font-bold">Quản lý Sản phẩm</h2>
-        <Link 
-          href="/admin/products/new"
-          className="bg-gold-500 hover:bg-gold-400 text-dark-900 px-4 py-2 rounded-lg font-bold transition-colors"
-        >
-          + Thêm Mới
-        </Link>
+        <div className="flex flex-col space-y-2">
+          <Link 
+            href="/admin/products/new"
+            className="bg-gold-500 hover:bg-gold-400 text-dark-900 px-4 py-2 rounded-lg font-bold text-center transition-colors text-sm"
+          >
+            + Thêm Mới
+          </Link>
+          <Link 
+            href="/products/new"
+            className="border border-gold-500/50 hover:border-gold-500 text-gold-500 px-4 py-1.5 rounded-lg font-bold text-center transition-all text-xs"
+          >
+            + Thêm Trực Quan
+          </Link>
+        </div>
       </div>
 
       <div className="bg-dark-800 rounded-xl border border-dark-700 overflow-hidden">

@@ -1,4 +1,12 @@
 import { Guitar } from '@/types';
+import { authService } from './authService';
+
+const getHeaders = () => {
+  const token = authService.getToken();
+  return {
+    ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
+  };
+};
 
 // Fallback data in case backend is not running
 const fallbackGuitars: Guitar[] = [
@@ -12,6 +20,7 @@ export async function fetchGuitars(): Promise<Guitar[]> {
   try {
     const res = await fetch('http://localhost:8080/api/guitars?page=0&size=4', {
       cache: 'no-store',
+      headers: getHeaders(),
     });
     if (!res.ok) throw new Error('API Error');
     const data = await res.json();
@@ -26,6 +35,7 @@ export async function fetchGuitarById(id: number): Promise<Guitar> {
   try {
     const res = await fetch(`http://localhost:8080/api/guitars/${id}`, {
       cache: 'no-store',
+      headers: getHeaders(),
     });
     if (!res.ok) throw new Error('API Error');
     return await res.json();
